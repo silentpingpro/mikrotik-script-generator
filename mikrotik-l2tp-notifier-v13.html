@@ -1,0 +1,1169 @@
+﻿<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MikroTik L2TP Notifier v13</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Vazirmatn:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0c12;--surface:#10131c;--surface2:#171b28;--border:#1f2436;--border2:#2a3048;--tg:#29a8e9;--tg2:#1a7abf;--bale:#7c6af5;--bale2:#5b5ef5;--success:#3dd68c;--warn:#f59e0b;--danger:#ff4d6d;--text:#e0e6f2;--text2:#b0b9cc;--text3:#808d9e;--sans:Vazirmatn,system-ui;--mono:"IBM Plex Mono",monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 700px 500px at 70% 0%,rgba(41,168,233,.05) 0%,transparent 60%),radial-gradient(ellipse 500px 400px at 10% 90%,rgba(124,106,245,.03) 0%,transparent 50%);pointer-events:none}
+.container{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:40px 24px 80px}
+header{margin-bottom:32px;border-bottom:1px solid var(--border);padding-bottom:24px}
+.logo{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.logo-icon{width:38px;height:38px;background:linear-gradient(135deg,var(--tg),var(--bale));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px}
+.logo-text{font-family:var(--mono);font-size:12px;color:var(--text2)}
+.logo-text span{color:var(--tg)}
+h1{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:6px}
+h1 em{font-style:normal;background:linear-gradient(90deg,var(--tg),var(--bale));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.subtitle{color:var(--text2);font-size:13px}
+.badge-row{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.badge{font-size:10px;font-family:var(--mono);padding:3px 9px;border-radius:20px;border:1px solid}
+.badge.green{color:var(--success);border-color:rgba(61,214,140,.3);background:rgba(61,214,140,.07)}
+.badge.blue{color:var(--tg);border-color:rgba(41,168,233,.3);background:rgba(41,168,233,.07)}
+.badge.purple{color:var(--bale);border-color:rgba(124,106,245,.3);background:rgba(124,106,245,.07)}
+.badge.orange{color:#f59e0b;border-color:rgba(245,158,11,.3);background:rgba(245,158,11,.07)}
+.warning{background:rgba(255,77,109,.07);border:1px solid rgba(255,77,109,.2);border-radius:10px;padding:12px 16px;margin-bottom:24px;font-size:12px;color:#ff8fa3;display:flex;gap:8px;line-height:1.6}
+.section{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:20px}
+.section-header{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+.section-num{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0}
+.section-num.purple{background:rgba(124,106,245,.15);color:var(--bale);border:1px solid rgba(124,106,245,.3)}
+.section-num.blue{background:rgba(41,168,233,.15);color:var(--tg);border:1px solid rgba(41,168,233,.3)}
+.section-title{font-size:14px;font-weight:600}
+.section-desc{font-size:11px;color:var(--text2);margin-top:2px}
+.guide{background:var(--surface2);border:1px solid var(--border2);border-radius:10px;padding:16px;margin-bottom:16px}
+.guide-title{font-size:12px;font-weight:600;color:var(--bale);margin-bottom:10px}
+.guide-steps{display:flex;flex-direction:column;gap:8px}
+.guide-step{display:flex;gap:10px;align-items:flex-start}
+.guide-step-num{width:20px;height:20px;background:var(--border2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-family:var(--mono);color:var(--bale);flex-shrink:0}
+.guide-step-text{font-size:12px;color:var(--text2);line-height:1.6}
+.guide-step-text strong{color:var(--text)}
+.guide-step-text code{font-family:var(--mono);font-size:11px;background:var(--border);padding:1px 5px;border-radius:3px;color:var(--success)}
+.platform-select{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
+@media(max-width:500px){.platform-select{grid-template-columns:1fr}}
+.platform-btn{border:2px solid var(--border2);border-radius:12px;padding:18px 14px;cursor:pointer;background:var(--surface2);transition:all .2s;text-align:center;user-select:none}
+.platform-btn:hover{background:var(--border);transform:translateY(-1px)}
+.platform-btn.active-tg{border-color:var(--tg);background:rgba(41,168,233,.07)}
+.platform-btn.active-bale{border-color:var(--bale);background:rgba(124,106,245,.07)}
+.platform-icon{font-size:26px;margin-bottom:6px}
+.platform-name{font-size:14px;font-weight:600;margin-bottom:4px}
+.platform-desc{font-size:10px;color:var(--text2);line-height:1.5}
+.platform-btn.active-tg .platform-name{color:var(--tg)}
+.platform-btn.active-bale .platform-name{color:var(--bale)}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+@media(max-width:560px){.fields,.options{grid-template-columns:1fr}}
+.field label,.opt-field label{display:block;font-size:11px;color:var(--text2);margin-bottom:5px;font-weight:500}
+.field input{width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:8px;padding:9px 12px;font-size:12px;font-family:var(--mono);color:var(--text);outline:none;transition:border-color .2s}
+.field input:focus{border-color:var(--bale)}
+.field input::placeholder{color:var(--text3)}
+.options{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px}
+@media(max-width:600px){.options{grid-template-columns:1fr 1fr}}
+.opt-field select{width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:8px;padding:9px 12px;font-size:12px;font-family:var(--sans);color:var(--text);outline:none;cursor:pointer;transition:border-color .2s}
+.opt-field select:focus{border-color:var(--bale)}
+.server-names-title{font-size:11px;color:var(--text2);margin-bottom:10px;font-weight:500}
+.server-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
+@media(max-width:560px){.server-grid{grid-template-columns:repeat(2,1fr)}}
+.server-field label{display:block;font-size:10px;color:var(--text3);font-family:var(--mono);margin-bottom:3px}
+.server-field input{width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:6px;padding:7px 8px;font-size:11px;font-family:var(--mono);color:var(--text);outline:none;direction:ltr;transition:border-color .2s}
+.server-field input:focus{border-color:var(--bale)}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;background:var(--bg);border:1px solid var(--border2);border-radius:8px;padding:10px 14px;margin-bottom:10px}
+.toggle-info .toggle-title{font-size:12px;font-weight:500;color:var(--text);margin-bottom:2px}
+.toggle-info .toggle-desc{font-size:11px;color:var(--text2)}
+.toggle-switch{position:relative;width:40px;height:22px;flex-shrink:0;margin-right:12px}
+.toggle-switch input{opacity:0;width:0;height:0}
+.toggle-slider{position:absolute;inset:0;background:var(--border2);border-radius:22px;cursor:pointer;transition:.2s}
+.toggle-slider::before{content:'';position:absolute;width:16px;height:16px;right:3px;top:3px;background:var(--text2);border-radius:50%;transition:.2s}
+input:checked+.toggle-slider{background:var(--bale)}
+input:checked+.toggle-slider::before{background:#fff;transform:translateX(-18px)}
+.btn{width:100%;border:none;border-radius:8px;padding:11px 20px;font-size:13px;font-weight:700;font-family:var(--sans);cursor:pointer;transition:opacity .15s,transform .1s;color:#fff;margin-top:8px}
+.btn-purple{background:linear-gradient(135deg,var(--bale),var(--bale2))}
+.btn-blue{background:linear-gradient(135deg,var(--tg),var(--tg2))}
+.btn:hover{opacity:.9;transform:translateY(-1px)}
+.btn:active{transform:translateY(0)}
+#output-main{display:none}
+.steps{display:flex;flex-direction:column;gap:12px;margin-top:16px}
+.step{background:var(--surface2);border:1px solid var(--border);border-radius:10px;overflow:hidden;transition:border-color .3s}
+.step-header{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--border)}
+.step-num{width:22px;height:22px;background:var(--border2);border-radius:5px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:10px;color:var(--bale);flex-shrink:0}
+.step-title{font-size:12px;font-weight:500;flex:1}
+.step-badge{font-size:9px;font-family:var(--mono);padding:2px 6px;border-radius:4px}
+.b-once{color:var(--bale);border:1px solid rgba(124,106,245,.3);background:rgba(124,106,245,.07)}
+.b-dynamic{color:var(--success);border:1px solid rgba(61,214,140,.3);background:rgba(61,214,140,.07)}
+.b-opt{color:var(--warn);border:1px solid rgba(245,158,11,.3);background:rgba(245,158,11,.07)}
+.b-test{color:var(--text2);border:1px solid var(--border2);background:var(--surface)}
+.code-wrap{position:relative;padding:14px 16px}
+.code-block{font-family:var(--mono);font-size:11.5px;line-height:1.8;color:#bcc4de;white-space:pre;overflow-x:auto;direction:ltr;text-align:left}
+.copy-btn{position:absolute;top:10px;left:12px;background:var(--surface);border:1px solid var(--border2);border-radius:5px;padding:3px 9px;font-size:10px;font-family:var(--sans);color:var(--text2);cursor:pointer;transition:all .2s}
+.copy-btn:hover{color:var(--text);border-color:var(--bale)}
+.copy-btn.copied{color:var(--success);border-color:var(--success)}
+.note{margin:0 16px 12px;padding:8px 12px;border-radius:6px;font-size:11px;color:var(--text2);line-height:1.7}
+.n-blue{background:rgba(41,168,233,.06);border:1px solid rgba(41,168,233,.2)}
+.n-blue strong{color:var(--tg)}
+.n-purple{background:rgba(124,106,245,.06);border:1px solid rgba(124,106,245,.2)}
+.n-purple strong{color:var(--bale)}
+.n-green{background:rgba(61,214,140,.06);border:1px solid rgba(61,214,140,.25)}
+.n-green strong{color:var(--success)}
+.n-warn{background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.25)}
+.cleanup-section{margin-top:36px;border:1px solid rgba(255,77,109,.2);border-radius:14px;overflow:hidden}
+.cleanup-header{display:flex;align-items:center;gap:10px;padding:14px 18px;cursor:pointer;background:rgba(255,77,109,.05);transition:background .2s;user-select:none}
+.cleanup-header:hover{background:rgba(255,77,109,.09)}
+.cleanup-title{font-size:13px;font-weight:600;color:#ff8fa3;flex:1}
+.cleanup-arrow{font-size:11px;color:var(--text3);transition:transform .2s}
+.cleanup-arrow.open{transform:rotate(180deg)}
+.cleanup-body{padding:18px;border-top:1px solid rgba(255,77,109,.15);display:none}
+.cleanup-warn{font-size:11px;color:#ff8fa3;background:rgba(255,77,109,.07);border:1px solid rgba(255,77,109,.2);border-radius:8px;padding:10px 12px;margin-bottom:14px}
+.version-badge{display:inline-block;background:rgba(41,168,233,.1);border:1px solid rgba(41,168,233,.3);color:var(--tg);padding:2px 8px;border-radius:12px;font-size:11px;font-family:var(--mono)}
+footer{margin-top:50px;padding-top:18px;border-top:1px solid var(--border);text-align:center;font-size:11px;color:var(--text3);font-family:var(--mono)}
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+  <div class="logo"><div class="logo-icon">📡</div><div class="logo-text">MikroTik / <span>RouterOS 7</span> <span class="version-badge">v13</span></div></div>
+  <h1>L2TP <em>Notifier</em> v13</h1>
+  <p class="subtitle">مانیتورینگ هوشمند L2TP — تلگرام یا بله — منوی inline، پرچم کشور GeoIP، کنترل از راه دور</p>
+  <div class="badge-row">
+    <span class="badge green">✓ پرچم GeoIP</span>
+    <span class="badge green">✓ منوی inline</span>
+    <span class="badge green">✓ فعال/غیرفعال</span>
+    <span class="badge green">✓ اسکریپت مقاوم‌تر</span>
+    <span class="badge orange">✓ HTTPS</span>
+    <span class="badge blue">تلگرام</span>
+    <span class="badge purple">بله</span>
+  </div>
+</header>
+
+<div class="warning">⚠️ TOKEN و Chat ID فقط اینجا وارد کن. این فایل کاملاً آفلاینه.</div>
+
+<div class="section">
+  <div class="section-header">
+    <div class="section-num purple">۱</div>
+    <div><div class="section-title">دانلود فایل‌های v13</div><div class="section-desc">دو فایل الزامی</div></div>
+  </div>
+  <div class="guide">
+    <div class="guide-title">📖 راهنما</div>
+    <div class="guide-steps">
+      <div class="guide-step"><div class="guide-step-num">۱</div><div class="guide-step-text"><strong>get-country-v13.rsc</strong> دانلود کن</div></div>
+      <div class="guide-step"><div class="guide-step-num">۲</div><div class="guide-step-text"><strong>get-flag-v13.rsc</strong> دانلود کن</div></div>
+      <div class="guide-step"><div class="guide-step-num">۳</div><div class="guide-step-text">هر فایل رو در Winbox: <strong>Files</strong> آپلود کن</div></div>
+      <div class="guide-step"><div class="guide-step-num">۴</div><div class="guide-step-text">ترمینال: <code>/import get-country-v13.rsc</code> و <code>/import get-flag-v13.rsc</code></div></div>
+    </div>
+  </div>
+  <div style="display:flex;gap:10px;flex-wrap:wrap">
+    <button class="btn btn-purple" onclick="downloadFile('get-country','get-country-v13.rsc')">⬇️ دانلود get-country</button>
+    <button class="btn btn-purple" onclick="downloadFile('get-flag','get-flag-v13.rsc')">⬇️ دانلود get-flag</button>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <div class="section-num blue">۲</div>
+    <div><div class="section-title">انتخاب پلتفرم و ساخت اسکریپت‌ها</div><div class="section-desc">تلگرام یا بله رو انتخاب کن</div></div>
+  </div>
+
+  <div class="platform-select">
+    <div class="platform-btn" id="btn-tg" onclick="selectPlatform('tg')">
+      <div class="platform-icon">✈️</div>
+      <div class="platform-name">تلگرام</div>
+      <div class="platform-desc">منوی inline کامل<br>نیاز به route برای فیلتر</div>
+    </div>
+    <div class="platform-btn" id="btn-bale" onclick="selectPlatform('bale')">
+      <div class="platform-icon">💬</div>
+      <div class="platform-name">بله</div>
+      <div class="platform-desc">مستقیم کار میکنه<br>بدون فیلتر</div>
+    </div>
+  </div>
+
+  <div id="config-section" style="display:none">
+    <div class="guide">
+      <div class="guide-title">📖 راهنما</div>
+      <div class="guide-steps">
+        <div class="guide-step"><div class="guide-step-num">۱</div><div class="guide-step-text">TOKEN ربات و Chat ID رو وارد کن</div></div>
+        <div class="guide-step"><div class="guide-step-num">۲</div><div class="guide-step-text">تعداد سرورها و اسم هر کدوم رو بنویس</div></div>
+        <div class="guide-step"><div class="guide-step-num">۳</div><div class="guide-step-text">دکمه <strong>ساخت اسکریپت‌ها</strong> رو بزن</div></div>
+        <div class="guide-step"><div class="guide-step-num">۴</div><div class="guide-step-text">هر اسکریپت رو از Winbox: <strong>System → Scripts → +</strong> وارد کن</div></div>
+        <div class="guide-step"><div class="guide-step-num">۵</div><div class="guide-step-text"><code>/start</code> بفرست و منو رو ببین</div></div>
+      </div>
+    </div>
+
+    <div class="fields">
+      <div class="field"><label id="token-label">TOKEN ربات</label><input id="token" type="text" placeholder="1234567890:ABCdefGHI..." autocomplete="off" spellcheck="false"></div>
+      <div class="field"><label>Chat ID</label><input id="chatid" type="text" placeholder="123456789" autocomplete="off" spellcheck="false"></div>
+    </div>
+
+    <div class="options">
+      <div class="opt-field">
+        <label>تعداد سرورهای L2TP</label>
+        <select id="server-count" onchange="updateServerFields()">
+          <option value="1">۱ سرور</option><option value="2">۲ سرور</option><option value="3">۳ سرور</option>
+          <option value="4">۴ سرور</option><option value="5">۵ سرور</option><option value="6">۶ سرور</option>
+          <option value="7" selected>۷ سرور</option>
+        </select>
+      </div>
+      <div class="opt-field">
+        <label>بازه گزارش خودکار</label>
+        <select id="interval">
+          <option value="1h">هر ۱ ساعت</option><option value="2h">هر ۲ ساعت</option>
+          <option value="4h" selected>هر ۴ ساعت</option><option value="6h">هر ۶ ساعت</option>
+          <option value="12h">هر ۱۲ ساعت</option><option value="24h">هر ۲۴ ساعت</option>
+        </select>
+      </div>
+      <div class="opt-field">
+        <label>بازه listener</label>
+        <select id="listener-interval">
+          <option value="5s">هر ۵ ثانیه</option><option value="10s" selected>هر ۱۰ ثانیه</option><option value="30s">هر ۳۰ ثانیه</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="server-names-title">اسم نمایشی سرورها</div>
+    <div class="server-grid" id="server-grid"></div>
+
+    <div class="toggle-row" id="filter-row" style="display:none">
+      <div class="toggle-info"><div class="toggle-title">تلگرام فیلتره</div><div class="toggle-desc">ترافیک از L2TP رد بشه — اگه رفع فیلتر شد خاموش کن</div></div>
+      <label class="toggle-switch"><input type="checkbox" id="filter-toggle" checked><span class="toggle-slider"></span></label>
+    </div>
+
+    <div id="iface-row" style="display:none;margin-bottom:14px">
+      <div class="opt-field"><label>اینترفیس gateway تلگرام</label>
+        <select id="iface">
+          <option value="l2tp-out1" selected>l2tp-out1</option><option value="l2tp-out2">l2tp-out2</option>
+          <option value="l2tp-out3">l2tp-out3</option><option value="l2tp-out4">l2tp-out4</option>
+          <option value="l2tp-out5">l2tp-out5</option><option value="l2tp-out6">l2tp-out6</option>
+          <option value="l2tp-out7">l2tp-out7</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="toggle-row">
+      <div class="toggle-info"><div class="toggle-title">گزارش خودکار</div><div class="toggle-desc">هر چند ساعت وضعیت همه سرورها فرستاده بشه</div></div>
+      <label class="toggle-switch"><input type="checkbox" id="auto-report" checked><span class="toggle-slider"></span></label>
+    </div>
+    <div class="toggle-row">
+      <div class="toggle-info"><div class="toggle-title">گزارش هوشمند</div><div class="toggle-desc">فقط وقتی سرور قطع یا وصل شد پیام بده</div></div>
+      <label class="toggle-switch"><input type="checkbox" id="smart-check" checked><span class="toggle-slider"></span></label>
+    </div>
+
+    <button class="btn btn-purple" id="gen-btn" onclick="generate()">⚡ ساخت اسکریپت‌ها</button>
+  </div>
+
+  <div id="output-main"></div>
+</div>
+
+<div class="cleanup-section">
+  <div class="cleanup-header" onclick="toggleCleanup()">
+    <span>🗑️</span><span class="cleanup-title">پاک کردن کامل از میکروتیک</span>
+    <span class="cleanup-arrow" id="cleanup-arrow">▼</span>
+  </div>
+  <div class="cleanup-body" id="cleanup-body">
+    <div class="cleanup-warn">⚠️ این دستورات همه اسکریپت‌ها، Schedulerها و Bridgeهای هر دو پلتفرم رو پاک میکنن.</div>
+    <div class="steps">
+      <div class="step"><div class="step-header"><div class="step-num">۱</div><div class="step-title">اسکریپت‌ها</div><span class="step-badge b-once">اجرا کن</span></div>
+        <div class="code-wrap"><button class="copy-btn" onclick="copyStep(this,'cl1')">📋 کپی</button>
+        <div class="code-block" id="cl1">/system script remove [find name~"tg-"]
+/system script remove [find name~"bale-"]
+/system script remove [find name="get-flag"]
+/system script remove [find name="get-country"]</div></div></div>
+      <div class="step"><div class="step-header"><div class="step-num">۲</div><div class="step-title">Scheduler ها</div><span class="step-badge b-once">اجرا کن</span></div>
+        <div class="code-wrap"><button class="copy-btn" onclick="copyStep(this,'cl2')">📋 کپی</button>
+        <div class="code-block" id="cl2">/system scheduler remove [find name~"tg-"]
+/system scheduler remove [find name~"bale-"]</div></div></div>
+      <div class="step"><div class="step-header"><div class="step-num">۳</div><div class="step-title">Bridge ها</div><span class="step-badge b-once">اجرا کن</span></div>
+        <div class="code-wrap"><button class="copy-btn" onclick="copyStep(this,'cl3')">📋 کپی</button>
+        <div class="code-block" id="cl3">/interface bridge remove [find name~"tg-offset-"]
+/interface bridge remove [find name~"tg-state-"]
+/interface bridge remove [find name~"bale-offset-"]
+/interface bridge remove [find name~"bale-state-"]</div></div></div>
+      <div class="step"><div class="step-header"><div class="step-num">۴</div><div class="step-title">DNS، Route و فایل‌ها</div><span class="step-badge b-once">اجرا کن</span></div>
+        <div class="code-wrap"><button class="copy-btn" onclick="copyStep(this,'cl4')">📋 کپی</button>
+        <div class="code-block" id="cl4">/ip dns static remove [find name="api.telegram.org"]
+/ip dns static remove [find name="tapi.bale.ai"]
+/ip route remove [find dst-address="149.154.160.0/20"]
+/ip route remove [find dst-address="91.108.4.0/22"]
+/file remove [find name~"tg-"]
+/file remove [find name~"bale-"]
+/file remove [find name~"geoip-"]
+/file remove [find name="mikrotik_flags.rsc"]</div></div></div>
+      <div class="step"><div class="step-header"><div class="step-num">✓</div><div class="step-title">تأیید</div><span class="step-badge b-test">چک کن</span></div>
+        <div class="code-wrap"><button class="copy-btn" onclick="copyStep(this,'cl5')">📋 کپی</button>
+        <div class="code-block" id="cl5">/system script print
+/system scheduler print
+/interface bridge print</div></div>
+        <div class="note n-green">اگه هیچ آیتمی با نام tg- یا bale- نبود، همه چیز پاک شده ✓</div></div>
+    </div>
+  </div>
+</div>
+
+</div>
+<footer>mikrotik-l2tp-notifier-v13.html — v13 hardened — offline tool</footer>
+<script>
+const GET_COUNTRY_V12 = `:global GeoIPIface
+:global FlagCC
+:global FlagResult
+:set FlagResult ""
+:set FlagCC ""
+:local iip ""
+:local ifid [/interface find name=$GeoIPIface]
+:if ([:len $ifid] = 0) do={ :return }
+:do { :set iip [/ip address get $ifid address] } on-error={}
+:if ([:len $iip] > 0) do={
+    :local iponly [:pick $iip 0 [:find $iip "/"]]
+    :local err 0
+    :do { /tool fetch url=("http://208.95.112.1/json/" . $iponly . "?fields=countryCode") keep-result=yes dst-path=geoip-tmp.txt } on-error={ :set err 1 }
+    :if ($err = 0) do={
+        :local geodata ""
+        :do { :set geodata [/file get geoip-tmp.txt contents] } on-error={ :set geodata "" }
+        :local geos [:find $geodata "\\"countryCode\\":\\""]
+        :if ([:typeof $geos] != "nil") do={
+            :local geoe [:find $geodata "\\"" ($geos+15)]
+            :set FlagCC [:pick $geodata ($geos+15) $geoe]
+            /system script run get-flag
+        }
+    }
+}`;
+
+const GET_FLAG_V12 = `:global FlagCC
+:global FlagResult
+:set FlagResult ""
+:if ($FlagCC="AD") do={ :set FlagResult "%F0%9F%87%A6%F0%9F%87%A9" }
+:if ($FlagCC="AE") do={ :set FlagResult "%F0%9F%87%A6%F0%9F%87%AA" }
+:if ($FlagCC="AF") do={ :set FlagResult "%F0%9F%87%A6%F0%9F%87%AB" }
+:if ($FlagCC="AG") do={ :set FlagResult "%F0%9F%87%A6%F0%9F%87%AC" }
+:if ($FlagCC="AI") do={ :set FlagResult "%F0%9F%87%A6%F0%9F%87%AE" }
+:if ($FlagCC="AL") do={ :set FlagResult "%F0%9F%87%A6%F0%9F%87%B1" }
+:if ($FlagCC="AM") do={ :set FlagResult "%F0%9F%87%A6%F0%9F%87%B2" }
+:if ($FlagCC="AO") do={ :set FlagResult "%F0%9F%87%A6%F0%9F%87%B4" }
+:if ($FlagCC="AQ") do={ :set FlagResult "%F0%9F%87%A6%F0%9F%87%B6" }
+:if ($FlagCC="AR") do={ :set FlagResult "%F0%9F%87%A6%F0%9F%87%B7" }
+:if ($FlagCC="AS") do={ :set FlagResult "%F0%9F%87%A6%F0%9F%87%B8" }
+:if ($FlagCC="AT") do={ :set FlagResult "%F0%9F%87%A6%F0%9F%87%B9" }
+:if ($FlagCC="AU") do={ :set FlagResult "%F0%9F%87%A6%F0%9F%87%BA" }
+:if ($FlagCC="AW") do={ :set FlagResult "%F0%9F%87%A6%F0%9F%87%BC" }
+:if ($FlagCC="AX") do={ :set FlagResult "%F0%9F%87%A6%F0%9F%87%BD" }
+:if ($FlagCC="AZ") do={ :set FlagResult "%F0%9F%87%A6%F0%9F%87%BF" }
+:if ($FlagCC="BA") do={ :set FlagResult "%F0%9F%87%A7%F0%9F%87%A6" }
+:if ($FlagCC="BB") do={ :set FlagResult "%F0%9F%87%A7%F0%9F%87%A7" }
+:if ($FlagCC="BD") do={ :set FlagResult "%F0%9F%87%A7%F0%9F%87%A9" }
+:if ($FlagCC="BE") do={ :set FlagResult "%F0%9F%87%A7%F0%9F%87%AA" }
+:if ($FlagCC="BF") do={ :set FlagResult "%F0%9F%87%A7%F0%9F%87%AB" }
+:if ($FlagCC="BG") do={ :set FlagResult "%F0%9F%87%A7%F0%9F%87%AC" }
+:if ($FlagCC="BH") do={ :set FlagResult "%F0%9F%87%A7%F0%9F%87%AD" }
+:if ($FlagCC="BI") do={ :set FlagResult "%F0%9F%87%A7%F0%9F%87%AE" }
+:if ($FlagCC="BJ") do={ :set FlagResult "%F0%9F%87%A7%F0%9F%87%AF" }
+:if ($FlagCC="BL") do={ :set FlagResult "%F0%9F%87%A7%F0%9F%87%B1" }
+:if ($FlagCC="BM") do={ :set FlagResult "%F0%9F%87%A7%F0%9F%87%B2" }
+:if ($FlagCC="BN") do={ :set FlagResult "%F0%9F%87%A7%F0%9F%87%B3" }
+:if ($FlagCC="BO") do={ :set FlagResult "%F0%9F%87%A7%F0%9F%87%B4" }
+:if ($FlagCC="BQ") do={ :set FlagResult "%F0%9F%87%A7%F0%9F%87%B6" }
+:if ($FlagCC="BR") do={ :set FlagResult "%F0%9F%87%A7%F0%9F%87%B7" }
+:if ($FlagCC="BS") do={ :set FlagResult "%F0%9F%87%A7%F0%9F%87%B8" }
+:if ($FlagCC="BT") do={ :set FlagResult "%F0%9F%87%A7%F0%9F%87%B9" }
+:if ($FlagCC="BV") do={ :set FlagResult "%F0%9F%87%A7%F0%9F%87%BB" }
+:if ($FlagCC="BW") do={ :set FlagResult "%F0%9F%87%A7%F0%9F%87%BC" }
+:if ($FlagCC="BY") do={ :set FlagResult "%F0%9F%87%A7%F0%9F%87%BE" }
+:if ($FlagCC="BZ") do={ :set FlagResult "%F0%9F%87%A7%F0%9F%87%BF" }
+:if ($FlagCC="CA") do={ :set FlagResult "%F0%9F%87%A8%F0%9F%87%A6" }
+:if ($FlagCC="CC") do={ :set FlagResult "%F0%9F%87%A8%F0%9F%87%A8" }
+:if ($FlagCC="CD") do={ :set FlagResult "%F0%9F%87%A8%F0%9F%87%A9" }
+:if ($FlagCC="CF") do={ :set FlagResult "%F0%9F%87%A8%F0%9F%87%AB" }
+:if ($FlagCC="CG") do={ :set FlagResult "%F0%9F%87%A8%F0%9F%87%AC" }
+:if ($FlagCC="CH") do={ :set FlagResult "%F0%9F%87%A8%F0%9F%87%AD" }
+:if ($FlagCC="CI") do={ :set FlagResult "%F0%9F%87%A8%F0%9F%87%AE" }
+:if ($FlagCC="CK") do={ :set FlagResult "%F0%9F%87%A8%F0%9F%87%B0" }
+:if ($FlagCC="CL") do={ :set FlagResult "%F0%9F%87%A8%F0%9F%87%B1" }
+:if ($FlagCC="CM") do={ :set FlagResult "%F0%9F%87%A8%F0%9F%87%B2" }
+:if ($FlagCC="CN") do={ :set FlagResult "%F0%9F%87%A8%F0%9F%87%B3" }
+:if ($FlagCC="CO") do={ :set FlagResult "%F0%9F%87%A8%F0%9F%87%B4" }
+:if ($FlagCC="CR") do={ :set FlagResult "%F0%9F%87%A8%F0%9F%87%B7" }
+:if ($FlagCC="CU") do={ :set FlagResult "%F0%9F%87%A8%F0%9F%87%BA" }
+:if ($FlagCC="CV") do={ :set FlagResult "%F0%9F%87%A8%F0%9F%87%BB" }
+:if ($FlagCC="CW") do={ :set FlagResult "%F0%9F%87%A8%F0%9F%87%BC" }
+:if ($FlagCC="CX") do={ :set FlagResult "%F0%9F%87%A8%F0%9F%87%BD" }
+:if ($FlagCC="CY") do={ :set FlagResult "%F0%9F%87%A8%F0%9F%87%BE" }
+:if ($FlagCC="CZ") do={ :set FlagResult "%F0%9F%87%A8%F0%9F%87%BF" }
+:if ($FlagCC="DE") do={ :set FlagResult "%F0%9F%87%A9%F0%9F%87%AA" }
+:if ($FlagCC="DJ") do={ :set FlagResult "%F0%9F%87%A9%F0%9F%87%AF" }
+:if ($FlagCC="DK") do={ :set FlagResult "%F0%9F%87%A9%F0%9F%87%B0" }
+:if ($FlagCC="DM") do={ :set FlagResult "%F0%9F%87%A9%F0%9F%87%B2" }
+:if ($FlagCC="DO") do={ :set FlagResult "%F0%9F%87%A9%F0%9F%87%B4" }
+:if ($FlagCC="DZ") do={ :set FlagResult "%F0%9F%87%A9%F0%9F%87%BF" }
+:if ($FlagCC="EC") do={ :set FlagResult "%F0%9F%87%AA%F0%9F%87%A8" }
+:if ($FlagCC="EE") do={ :set FlagResult "%F0%9F%87%AA%F0%9F%87%AA" }
+:if ($FlagCC="EG") do={ :set FlagResult "%F0%9F%87%AA%F0%9F%87%AC" }
+:if ($FlagCC="EH") do={ :set FlagResult "%F0%9F%87%AA%F0%9F%87%AD" }
+:if ($FlagCC="ER") do={ :set FlagResult "%F0%9F%87%AA%F0%9F%87%B7" }
+:if ($FlagCC="ES") do={ :set FlagResult "%F0%9F%87%AA%F0%9F%87%B8" }
+:if ($FlagCC="ET") do={ :set FlagResult "%F0%9F%87%AA%F0%9F%87%B9" }
+:if ($FlagCC="FI") do={ :set FlagResult "%F0%9F%87%AB%F0%9F%87%AE" }
+:if ($FlagCC="FJ") do={ :set FlagResult "%F0%9F%87%AB%F0%9F%87%AF" }
+:if ($FlagCC="FK") do={ :set FlagResult "%F0%9F%87%AB%F0%9F%87%B0" }
+:if ($FlagCC="FM") do={ :set FlagResult "%F0%9F%87%AB%F0%9F%87%B2" }
+:if ($FlagCC="FO") do={ :set FlagResult "%F0%9F%87%AB%F0%9F%87%B4" }
+:if ($FlagCC="FR") do={ :set FlagResult "%F0%9F%87%AB%F0%9F%87%B7" }
+:if ($FlagCC="GA") do={ :set FlagResult "%F0%9F%87%AC%F0%9F%87%A6" }
+:if ($FlagCC="GB") do={ :set FlagResult "%F0%9F%87%AC%F0%9F%87%A7" }
+:if ($FlagCC="GD") do={ :set FlagResult "%F0%9F%87%AC%F0%9F%87%A9" }
+:if ($FlagCC="GE") do={ :set FlagResult "%F0%9F%87%AC%F0%9F%87%AA" }
+:if ($FlagCC="GF") do={ :set FlagResult "%F0%9F%87%AC%F0%9F%87%AB" }
+:if ($FlagCC="GG") do={ :set FlagResult "%F0%9F%87%AC%F0%9F%87%AC" }
+:if ($FlagCC="GH") do={ :set FlagResult "%F0%9F%87%AC%F0%9F%87%AD" }
+:if ($FlagCC="GI") do={ :set FlagResult "%F0%9F%87%AC%F0%9F%87%AE" }
+:if ($FlagCC="GL") do={ :set FlagResult "%F0%9F%87%AC%F0%9F%87%B1" }
+:if ($FlagCC="GM") do={ :set FlagResult "%F0%9F%87%AC%F0%9F%87%B2" }
+:if ($FlagCC="GN") do={ :set FlagResult "%F0%9F%87%AC%F0%9F%87%B3" }
+:if ($FlagCC="GP") do={ :set FlagResult "%F0%9F%87%AC%F0%9F%87%B5" }
+:if ($FlagCC="GQ") do={ :set FlagResult "%F0%9F%87%AC%F0%9F%87%B6" }
+:if ($FlagCC="GR") do={ :set FlagResult "%F0%9F%87%AC%F0%9F%87%B7" }
+:if ($FlagCC="GS") do={ :set FlagResult "%F0%9F%87%AC%F0%9F%87%B8" }
+:if ($FlagCC="GT") do={ :set FlagResult "%F0%9F%87%AC%F0%9F%87%B9" }
+:if ($FlagCC="GU") do={ :set FlagResult "%F0%9F%87%AC%F0%9F%87%BA" }
+:if ($FlagCC="GW") do={ :set FlagResult "%F0%9F%87%AC%F0%9F%87%BC" }
+:if ($FlagCC="GY") do={ :set FlagResult "%F0%9F%87%AC%F0%9F%87%BE" }
+:if ($FlagCC="HK") do={ :set FlagResult "%F0%9F%87%AD%F0%9F%87%B0" }
+:if ($FlagCC="HM") do={ :set FlagResult "%F0%9F%87%AD%F0%9F%87%B2" }
+:if ($FlagCC="HN") do={ :set FlagResult "%F0%9F%87%AD%F0%9F%87%B3" }
+:if ($FlagCC="HR") do={ :set FlagResult "%F0%9F%87%AD%F0%9F%87%B7" }
+:if ($FlagCC="HT") do={ :set FlagResult "%F0%9F%87%AD%F0%9F%87%B9" }
+:if ($FlagCC="HU") do={ :set FlagResult "%F0%9F%87%AD%F0%9F%87%BA" }
+:if ($FlagCC="ID") do={ :set FlagResult "%F0%9F%87%AE%F0%9F%87%A9" }
+:if ($FlagCC="IE") do={ :set FlagResult "%F0%9F%87%AE%F0%9F%87%AA" }
+:if ($FlagCC="IL") do={ :set FlagResult "%F0%9F%87%AE%F0%9F%87%B1" }
+:if ($FlagCC="IM") do={ :set FlagResult "%F0%9F%87%AE%F0%9F%87%B2" }
+:if ($FlagCC="IN") do={ :set FlagResult "%F0%9F%87%AE%F0%9F%87%B3" }
+:if ($FlagCC="IO") do={ :set FlagResult "%F0%9F%87%AE%F0%9F%87%B4" }
+:if ($FlagCC="IQ") do={ :set FlagResult "%F0%9F%87%AE%F0%9F%87%B6" }
+:if ($FlagCC="IR") do={ :set FlagResult "%F0%9F%87%AE%F0%9F%87%B7" }
+:if ($FlagCC="IS") do={ :set FlagResult "%F0%9F%87%AE%F0%9F%87%B8" }
+:if ($FlagCC="IT") do={ :set FlagResult "%F0%9F%87%AE%F0%9F%87%B9" }
+:if ($FlagCC="JE") do={ :set FlagResult "%F0%9F%87%AF%F0%9F%87%AA" }
+:if ($FlagCC="JM") do={ :set FlagResult "%F0%9F%87%AF%F0%9F%87%B2" }
+:if ($FlagCC="JO") do={ :set FlagResult "%F0%9F%87%AF%F0%9F%87%B4" }
+:if ($FlagCC="JP") do={ :set FlagResult "%F0%9F%87%AF%F0%9F%87%B5" }
+:if ($FlagCC="KE") do={ :set FlagResult "%F0%9F%87%B0%F0%9F%87%AA" }
+:if ($FlagCC="KG") do={ :set FlagResult "%F0%9F%87%B0%F0%9F%87%AC" }
+:if ($FlagCC="KH") do={ :set FlagResult "%F0%9F%87%B0%F0%9F%87%AD" }
+:if ($FlagCC="KI") do={ :set FlagResult "%F0%9F%87%B0%F0%9F%87%AE" }
+:if ($FlagCC="KM") do={ :set FlagResult "%F0%9F%87%B0%F0%9F%87%B2" }
+:if ($FlagCC="KN") do={ :set FlagResult "%F0%9F%87%B0%F0%9F%87%B3" }
+:if ($FlagCC="KP") do={ :set FlagResult "%F0%9F%87%B0%F0%9F%87%B5" }
+:if ($FlagCC="KR") do={ :set FlagResult "%F0%9F%87%B0%F0%9F%87%B7" }
+:if ($FlagCC="KW") do={ :set FlagResult "%F0%9F%87%B0%F0%9F%87%BC" }
+:if ($FlagCC="KY") do={ :set FlagResult "%F0%9F%87%B0%F0%9F%87%BE" }
+:if ($FlagCC="KZ") do={ :set FlagResult "%F0%9F%87%B0%F0%9F%87%BF" }
+:if ($FlagCC="LA") do={ :set FlagResult "%F0%9F%87%B1%F0%9F%87%A6" }
+:if ($FlagCC="LB") do={ :set FlagResult "%F0%9F%87%B1%F0%9F%87%A7" }
+:if ($FlagCC="LC") do={ :set FlagResult "%F0%9F%87%B1%F0%9F%87%A8" }
+:if ($FlagCC="LI") do={ :set FlagResult "%F0%9F%87%B1%F0%9F%87%AE" }
+:if ($FlagCC="LK") do={ :set FlagResult "%F0%9F%87%B1%F0%9F%87%B0" }
+:if ($FlagCC="LR") do={ :set FlagResult "%F0%9F%87%B1%F0%9F%87%B7" }
+:if ($FlagCC="LS") do={ :set FlagResult "%F0%9F%87%B1%F0%9F%87%B8" }
+:if ($FlagCC="LT") do={ :set FlagResult "%F0%9F%87%B1%F0%9F%87%B9" }
+:if ($FlagCC="LU") do={ :set FlagResult "%F0%9F%87%B1%F0%9F%87%BA" }
+:if ($FlagCC="LV") do={ :set FlagResult "%F0%9F%87%B1%F0%9F%87%BB" }
+:if ($FlagCC="LY") do={ :set FlagResult "%F0%9F%87%B1%F0%9F%87%BE" }
+:if ($FlagCC="MA") do={ :set FlagResult "%F0%9F%87%B2%F0%9F%87%A6" }
+:if ($FlagCC="MC") do={ :set FlagResult "%F0%9F%87%B2%F0%9F%87%A8" }
+:if ($FlagCC="MD") do={ :set FlagResult "%F0%9F%87%B2%F0%9F%87%A9" }
+:if ($FlagCC="ME") do={ :set FlagResult "%F0%9F%87%B2%F0%9F%87%AA" }
+:if ($FlagCC="MF") do={ :set FlagResult "%F0%9F%87%B2%F0%9F%87%AB" }
+:if ($FlagCC="MG") do={ :set FlagResult "%F0%9F%87%B2%F0%9F%87%AC" }
+:if ($FlagCC="MH") do={ :set FlagResult "%F0%9F%87%B2%F0%9F%87%AD" }
+:if ($FlagCC="MK") do={ :set FlagResult "%F0%9F%87%B2%F0%9F%87%B0" }
+:if ($FlagCC="ML") do={ :set FlagResult "%F0%9F%87%B2%F0%9F%87%B1" }
+:if ($FlagCC="MM") do={ :set FlagResult "%F0%9F%87%B2%F0%9F%87%B2" }
+:if ($FlagCC="MN") do={ :set FlagResult "%F0%9F%87%B2%F0%9F%87%B3" }
+:if ($FlagCC="MO") do={ :set FlagResult "%F0%9F%87%B2%F0%9F%87%B4" }
+:if ($FlagCC="MP") do={ :set FlagResult "%F0%9F%87%B2%F0%9F%87%B5" }
+:if ($FlagCC="MQ") do={ :set FlagResult "%F0%9F%87%B2%F0%9F%87%B6" }
+:if ($FlagCC="MR") do={ :set FlagResult "%F0%9F%87%B2%F0%9F%87%B7" }
+:if ($FlagCC="MS") do={ :set FlagResult "%F0%9F%87%B2%F0%9F%87%B8" }
+:if ($FlagCC="MT") do={ :set FlagResult "%F0%9F%87%B2%F0%9F%87%B9" }
+:if ($FlagCC="MU") do={ :set FlagResult "%F0%9F%87%B2%F0%9F%87%BA" }
+:if ($FlagCC="MV") do={ :set FlagResult "%F0%9F%87%B2%F0%9F%87%BB" }
+:if ($FlagCC="MW") do={ :set FlagResult "%F0%9F%87%B2%F0%9F%87%BC" }
+:if ($FlagCC="MX") do={ :set FlagResult "%F0%9F%87%B2%F0%9F%87%BD" }
+:if ($FlagCC="MY") do={ :set FlagResult "%F0%9F%87%B2%F0%9F%87%BE" }
+:if ($FlagCC="MZ") do={ :set FlagResult "%F0%9F%87%B2%F0%9F%87%BF" }
+:if ($FlagCC="NA") do={ :set FlagResult "%F0%9F%87%B3%F0%9F%87%A6" }
+:if ($FlagCC="NC") do={ :set FlagResult "%F0%9F%87%B3%F0%9F%87%A8" }
+:if ($FlagCC="NE") do={ :set FlagResult "%F0%9F%87%B3%F0%9F%87%AA" }
+:if ($FlagCC="NF") do={ :set FlagResult "%F0%9F%87%B3%F0%9F%87%AB" }
+:if ($FlagCC="NG") do={ :set FlagResult "%F0%9F%87%B3%F0%9F%87%AC" }
+:if ($FlagCC="NI") do={ :set FlagResult "%F0%9F%87%B3%F0%9F%87%AE" }
+:if ($FlagCC="NL") do={ :set FlagResult "%F0%9F%87%B3%F0%9F%87%B1" }
+:if ($FlagCC="NO") do={ :set FlagResult "%F0%9F%87%B3%F0%9F%87%B4" }
+:if ($FlagCC="NP") do={ :set FlagResult "%F0%9F%87%B3%F0%9F%87%B5" }
+:if ($FlagCC="NR") do={ :set FlagResult "%F0%9F%87%B3%F0%9F%87%B7" }
+:if ($FlagCC="NU") do={ :set FlagResult "%F0%9F%87%B3%F0%9F%87%BA" }
+:if ($FlagCC="NZ") do={ :set FlagResult "%F0%9F%87%B3%F0%9F%87%BF" }
+:if ($FlagCC="OM") do={ :set FlagResult "%F0%9F%87%B4%F0%9F%87%B2" }
+:if ($FlagCC="PA") do={ :set FlagResult "%F0%9F%87%B5%F0%9F%87%A6" }
+:if ($FlagCC="PE") do={ :set FlagResult "%F0%9F%87%B5%F0%9F%87%AA" }
+:if ($FlagCC="PF") do={ :set FlagResult "%F0%9F%87%B5%F0%9F%87%AB" }
+:if ($FlagCC="PG") do={ :set FlagResult "%F0%9F%87%B5%F0%9F%87%AC" }
+:if ($FlagCC="PH") do={ :set FlagResult "%F0%9F%87%B5%F0%9F%87%AD" }
+:if ($FlagCC="PK") do={ :set FlagResult "%F0%9F%87%B5%F0%9F%87%B0" }
+:if ($FlagCC="PL") do={ :set FlagResult "%F0%9F%87%B5%F0%9F%87%B1" }
+:if ($FlagCC="PM") do={ :set FlagResult "%F0%9F%87%B5%F0%9F%87%B2" }
+:if ($FlagCC="PN") do={ :set FlagResult "%F0%9F%87%B5%F0%9F%87%B3" }
+:if ($FlagCC="PR") do={ :set FlagResult "%F0%9F%87%B5%F0%9F%87%B7" }
+:if ($FlagCC="PS") do={ :set FlagResult "%F0%9F%87%B5%F0%9F%87%B8" }
+:if ($FlagCC="PT") do={ :set FlagResult "%F0%9F%87%B5%F0%9F%87%B9" }
+:if ($FlagCC="PW") do={ :set FlagResult "%F0%9F%87%B5%F0%9F%87%BC" }
+:if ($FlagCC="PY") do={ :set FlagResult "%F0%9F%87%B5%F0%9F%87%BE" }
+:if ($FlagCC="QA") do={ :set FlagResult "%F0%9F%87%B6%F0%9F%87%A6" }
+:if ($FlagCC="RE") do={ :set FlagResult "%F0%9F%87%B7%F0%9F%87%AA" }
+:if ($FlagCC="RO") do={ :set FlagResult "%F0%9F%87%B7%F0%9F%87%B4" }
+:if ($FlagCC="RS") do={ :set FlagResult "%F0%9F%87%B7%F0%9F%87%B8" }
+:if ($FlagCC="RU") do={ :set FlagResult "%F0%9F%87%B7%F0%9F%87%BA" }
+:if ($FlagCC="RW") do={ :set FlagResult "%F0%9F%87%B7%F0%9F%87%BC" }
+:if ($FlagCC="SA") do={ :set FlagResult "%F0%9F%87%B8%F0%9F%87%A6" }
+:if ($FlagCC="SB") do={ :set FlagResult "%F0%9F%87%B8%F0%9F%87%A7" }
+:if ($FlagCC="SC") do={ :set FlagResult "%F0%9F%87%B8%F0%9F%87%A8" }
+:if ($FlagCC="SD") do={ :set FlagResult "%F0%9F%87%B8%F0%9F%87%A9" }
+:if ($FlagCC="SE") do={ :set FlagResult "%F0%9F%87%B8%F0%9F%87%AA" }
+:if ($FlagCC="SG") do={ :set FlagResult "%F0%9F%87%B8%F0%9F%87%AC" }
+:if ($FlagCC="SH") do={ :set FlagResult "%F0%9F%87%B8%F0%9F%87%AD" }
+:if ($FlagCC="SI") do={ :set FlagResult "%F0%9F%87%B8%F0%9F%87%AE" }
+:if ($FlagCC="SJ") do={ :set FlagResult "%F0%9F%87%B8%F0%9F%87%AF" }
+:if ($FlagCC="SK") do={ :set FlagResult "%F0%9F%87%B8%F0%9F%87%B0" }
+:if ($FlagCC="SL") do={ :set FlagResult "%F0%9F%87%B8%F0%9F%87%B1" }
+:if ($FlagCC="SM") do={ :set FlagResult "%F0%9F%87%B8%F0%9F%87%B2" }
+:if ($FlagCC="SN") do={ :set FlagResult "%F0%9F%87%B8%F0%9F%87%B3" }
+:if ($FlagCC="SO") do={ :set FlagResult "%F0%9F%87%B8%F0%9F%87%B4" }
+:if ($FlagCC="SR") do={ :set FlagResult "%F0%9F%87%B8%F0%9F%87%B7" }
+:if ($FlagCC="SS") do={ :set FlagResult "%F0%9F%87%B8%F0%9F%87%B8" }
+:if ($FlagCC="ST") do={ :set FlagResult "%F0%9F%87%B8%F0%9F%87%B9" }
+:if ($FlagCC="SV") do={ :set FlagResult "%F0%9F%87%B8%F0%9F%87%BB" }
+:if ($FlagCC="SX") do={ :set FlagResult "%F0%9F%87%B8%F0%9F%87%BD" }
+:if ($FlagCC="SY") do={ :set FlagResult "%F0%9F%87%B8%F0%9F%87%BE" }
+:if ($FlagCC="SZ") do={ :set FlagResult "%F0%9F%87%B8%F0%9F%87%BF" }
+:if ($FlagCC="TC") do={ :set FlagResult "%F0%9F%87%B9%F0%9F%87%A8" }
+:if ($FlagCC="TD") do={ :set FlagResult "%F0%9F%87%B9%F0%9F%87%A9" }
+:if ($FlagCC="TF") do={ :set FlagResult "%F0%9F%87%B9%F0%9F%87%AB" }
+:if ($FlagCC="TG") do={ :set FlagResult "%F0%9F%87%B9%F0%9F%87%AC" }
+:if ($FlagCC="TH") do={ :set FlagResult "%F0%9F%87%B9%F0%9F%87%AD" }
+:if ($FlagCC="TJ") do={ :set FlagResult "%F0%9F%87%B9%F0%9F%87%AF" }
+:if ($FlagCC="TK") do={ :set FlagResult "%F0%9F%87%B9%F0%9F%87%B0" }
+:if ($FlagCC="TL") do={ :set FlagResult "%F0%9F%87%B9%F0%9F%87%B1" }
+:if ($FlagCC="TM") do={ :set FlagResult "%F0%9F%87%B9%F0%9F%87%B2" }
+:if ($FlagCC="TN") do={ :set FlagResult "%F0%9F%87%B9%F0%9F%87%B3" }
+:if ($FlagCC="TO") do={ :set FlagResult "%F0%9F%87%B9%F0%9F%87%B4" }
+:if ($FlagCC="TR") do={ :set FlagResult "%F0%9F%87%B9%F0%9F%87%B7" }
+:if ($FlagCC="TT") do={ :set FlagResult "%F0%9F%87%B9%F0%9F%87%B9" }
+:if ($FlagCC="TV") do={ :set FlagResult "%F0%9F%87%B9%F0%9F%87%BB" }
+:if ($FlagCC="TW") do={ :set FlagResult "%F0%9F%87%B9%F0%9F%87%BC" }
+:if ($FlagCC="TZ") do={ :set FlagResult "%F0%9F%87%B9%F0%9F%87%BF" }
+:if ($FlagCC="UA") do={ :set FlagResult "%F0%9F%87%BA%F0%9F%87%A6" }
+:if ($FlagCC="UG") do={ :set FlagResult "%F0%9F%87%BA%F0%9F%87%AC" }
+:if ($FlagCC="UM") do={ :set FlagResult "%F0%9F%87%BA%F0%9F%87%B2" }
+:if ($FlagCC="US") do={ :set FlagResult "%F0%9F%87%BA%F0%9F%87%B8" }
+:if ($FlagCC="UY") do={ :set FlagResult "%F0%9F%87%BA%F0%9F%87%BE" }
+:if ($FlagCC="UZ") do={ :set FlagResult "%F0%9F%87%BA%F0%9F%87%BF" }
+:if ($FlagCC="VA") do={ :set FlagResult "%F0%9F%87%BB%F0%9F%87%A6" }
+:if ($FlagCC="VC") do={ :set FlagResult "%F0%9F%87%BB%F0%9F%87%A8" }
+:if ($FlagCC="VE") do={ :set FlagResult "%F0%9F%87%BB%F0%9F%87%AA" }
+:if ($FlagCC="VG") do={ :set FlagResult "%F0%9F%87%BB%F0%9F%87%AC" }
+:if ($FlagCC="VI") do={ :set FlagResult "%F0%9F%87%BB%F0%9F%87%AE" }
+:if ($FlagCC="VN") do={ :set FlagResult "%F0%9F%87%BB%F0%9F%87%B3" }
+:if ($FlagCC="VU") do={ :set FlagResult "%F0%9F%87%BB%F0%9F%87%BA" }
+:if ($FlagCC="WF") do={ :set FlagResult "%F0%9F%87%BC%F0%9F%87%AB" }
+:if ($FlagCC="WS") do={ :set FlagResult "%F0%9F%87%BC%F0%9F%87%B8" }
+:if ($FlagCC="XK") do={ :set FlagResult "%F0%9F%87%BD%F0%9F%87%B0" }
+:if ($FlagCC="YE") do={ :set FlagResult "%F0%9F%87%BE%F0%9F%87%AA" }
+:if ($FlagCC="YT") do={ :set FlagResult "%F0%9F%87%BE%F0%9F%87%B9" }
+:if ($FlagCC="ZA") do={ :set FlagResult "%F0%9F%87%BF%F0%9F%87%A6" }
+:if ($FlagCC="ZM") do={ :set FlagResult "%F0%9F%87%BF%F0%9F%87%B2" }
+:if ($FlagCC="ZW") do={ :set FlagResult "%F0%9F%87%BF%F0%9F%87%BC" }`;
+
+let platform = null;
+
+function selectPlatform(p) {
+  platform = p;
+  document.getElementById('btn-tg').className = 'platform-btn' + (p === 'tg' ? ' active-tg' : '');
+  document.getElementById('btn-bale').className = 'platform-btn' + (p === 'bale' ? ' active-bale' : '');
+  document.getElementById('config-section').style.display = 'block';
+  document.getElementById('gen-btn').className = 'btn ' + (p === 'tg' ? 'btn-blue' : 'btn-purple');
+  document.getElementById('filter-row').style.display = p === 'tg' ? 'flex' : 'none';
+  document.getElementById('iface-row').style.display = p === 'tg' ? 'block' : 'none';
+  document.getElementById('token-label').textContent = p === 'tg' ? 'TOKEN ربات تلگرام' : 'TOKEN ربات بله';
+  document.getElementById('output-main').style.display = 'none';
+  document.getElementById('output-main').innerHTML = '';
+  updateServerFields();
+}
+
+function updateServerFields() {
+  const count = parseInt(document.getElementById('server-count').value);
+  const grid = document.getElementById('server-grid');
+  grid.innerHTML = '';
+  for (let i = 1; i <= count; i++) {
+    const div = document.createElement('div');
+    div.className = 'server-field';
+    const label = document.createElement('label');
+    label.textContent = 'سرور ' + i;
+    const input = document.createElement('input');
+    input.id = 'srv' + i;
+    input.type = 'text';
+    input.value = 'Server S' + i;
+    div.appendChild(label);
+    div.appendChild(input);
+    grid.appendChild(div);
+  }
+}
+
+function getSrvName(i) {
+  const el = document.getElementById('srv' + i);
+  return el ? (el.value.trim() || ('Server S' + i)) : ('Server S' + i);
+}
+
+function downloadFile(type, filename) {
+  let content = '';
+  if (type === 'get-country') {
+    content = wrapRscScript('get-country', GET_COUNTRY_V12);
+  } else if (type === 'get-flag') {
+    content = wrapRscScript('get-flag', GET_FLAG_V12);
+  }
+  const blob = new Blob([content], {type: 'text/plain'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  a.click();
+}
+
+function wrapRscScript(name, source) {
+  return '/system script remove [find name="' + name + '"]' + nl() +
+         '/system script add name=' + name + ' policy=read,write,test source={' + nl() +
+         source + nl() +
+         '}';
+}
+
+function esc(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function rosStr(s) {
+  return String(s).replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\$/g, '\\$');
+}
+
+function urlText(s) {
+  return encodeURIComponent(String(s)).replace(/%20/g, '+');
+}
+
+function mkStep(num, title, badgeClass, badgeText, codeId, code, noteClass, noteHtml) {
+  let html = '<div class="step">';
+  html += '<div class="step-header"><div class="step-num">' + num + '</div>';
+  html += '<div class="step-title">' + title + '</div>';
+  html += '<span class="step-badge ' + badgeClass + '">' + badgeText + '</span></div>';
+  html += '<div class="code-wrap"><button class="copy-btn" onclick="copyStep(this,\'' + codeId + '\')">📋 کپی</button>';
+  html += '<div class="code-block" id="' + codeId + '">' + esc(code) + '</div></div>';
+  if (noteHtml) {
+    html += '<div class="note ' + noteClass + '">' + noteHtml + '</div>';
+  }
+  html += '</div>';
+  return html;
+}
+
+function copyStep(btn, id) {
+  const el = document.getElementById(id);
+  const text = el.innerText || el.textContent;
+  const done = function() {
+    btn.textContent = '✓ کپی شد';
+    btn.classList.add('copied');
+    setTimeout(function() {
+      btn.textContent = '📋 کپی';
+      btn.classList.remove('copied');
+    }, 2000);
+  };
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).then(done).catch(function() { fallbackCopy(text, done); });
+  } else {
+    fallbackCopy(text, done);
+  }
+}
+
+function fallbackCopy(text, done) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.opacity = '0';
+  document.body.appendChild(ta);
+  ta.select();
+  try { document.execCommand('copy'); } catch (e) {}
+  document.body.removeChild(ta);
+  done();
+}
+
+function toggleCleanup() {
+  const body = document.getElementById('cleanup-body');
+  const arrow = document.getElementById('cleanup-arrow');
+  const open = body.style.display !== 'block';
+  body.style.display = open ? 'block' : 'none';
+  arrow.classList.toggle('open', open);
+}
+
+function nl(n) {
+  return String.fromCharCode(10).repeat(n || 1);
+}
+
+function geoCall(indent) {
+  const sp = ' '.repeat(indent);
+  return sp + ':global GeoIPIface' + nl() +
+         sp + ':set GeoIPIface $ifn' + nl() +
+         sp + '/system script run get-country';
+}
+
+function kbdEnc(rows) {
+  return encodeURIComponent(JSON.stringify({inline_keyboard: rows}));
+}
+
+function buildListener(token, chatid, servers, api, fe, prefix, offsetLen) {
+  const title = '%F0%9F%93%A1+%D9%BE%D9%86%D9%84+%DA%A9%D9%86%D8%AA%D8%B1%D9%84+MikroTik';
+  const srvIds = servers.map(function(s){return s.id;}).join(';');
+  const srvNames = '{""' + servers.map(function(s){return ';"' + rosStr(s.msgName) + '"';}).join('') + '}';
+
+  const mainKbd = kbdEnc([
+    [{text:'📊 وضعیت کل شبکه', callback_data:'status_all'}],
+    [{text:'🖥️ وضعیت/تغییر سرورها', callback_data:'server_menu'}],
+    [{text:'🌐 آدرس IP', callback_data:'ip'},{text:'⏱️ آپتایم', callback_data:'uptime'}]
+  ]);
+
+  let srvRows = [], row = [];
+  for (const s of servers) {
+    row.push({text: s.name, callback_data: 'srv_' + s.id});
+    if (row.length === 4) { srvRows.push(row); row = []; }
+  }
+  if (row.length) srvRows.push(row);
+  srvRows.push([{text:'🔙 بازگشت به منوی اصلی', callback_data:'main_menu'}]);
+  const srvMenuKbd = kbdEnc(srvRows);
+
+  function ctrlKbd(idx) {
+    return kbdEnc([
+      [{text:'📊 وضعیت', callback_data:'srv_status_' + idx},
+       {text:'▶️ فعال', callback_data:'srv_enable_' + idx},
+       {text:'⏸️ غیرفعال', callback_data:'srv_disable_' + idx}],
+      [{text:'🔙 بازگشت به سرورها', callback_data:'server_menu'}]
+    ]);
+  }
+
+  const L = [];
+  function a(s) { L.push(s); }
+
+  a(':local token "' + rosStr(token) + '"');
+  a(':local chatid "' + rosStr(chatid) + '"');
+  a(':local offset 1');
+  a(':local api "' + api + '"');
+  a('');
+  a(':local ifname [/interface bridge find where name~"' + prefix + 'offset-"]');
+  a(':if ([:len $ifname] > 0) do={');
+  a('    :local fullname [/interface bridge get $ifname name]');
+  a('    :set offset [:tonum [:pick $fullname ' + offsetLen + ' [:len $fullname]]]');
+  a('}');
+  a('');
+  a(':local fetchErr 0');
+  a(':do { /tool fetch url=($api . $token . "/getUpdates?offset=" . $offset . "&timeout=0")' + fe + ' keep-result=yes dst-path=' + prefix + 'updates.txt } on-error={ :set fetchErr 1 }');
+  a(':if ($fetchErr != 0) do={ :return }');
+  a(':local data ""');
+  a(':do { :set data [/file get ' + prefix + 'updates.txt contents] } on-error={ :set data "" }');
+  a(':if ([:len $data] = 0) do={ :return }');
+  a(':local replied false');
+  a(':local cdata ""');
+  a(':local msgtext ""');
+  a(':local isCallback false');
+  a('');
+  a(':if ([:find $data "callback_query"] > 0) do={');
+  a('    :set isCallback true');
+  a('    :local ds ([:find $data "\\"data\\":\\""]+8)');
+  a('    :local de [:find $data "\\"" $ds]');
+  a('    :set cdata [:pick $data $ds $de]');
+  a('}');
+  a('');
+  a(':if ($isCallback=false) do={');
+  a('    :if ([:find $data "\\"text\\":\\""] > 0) do={');
+  a('        :local ts ([:find $data "\\"text\\":\\""]+8)');
+  a('        :local te [:find $data "\\"" $ts]');
+  a('        :set msgtext [:pick $data $ts $te]');
+  a('    }');
+  a('}');
+  a('');
+  a(':local mainKbd "' + mainKbd + '"');
+  a(':local srvMenuKbd "' + srvMenuKbd + '"');
+  for (const s of servers) {
+    a(':local ctrlKbd' + s.id + ' "' + ctrlKbd(s.id) + '"');
+  }
+  a(':local srvNames ' + srvNames);
+  a('');
+
+  a(':if (($msgtext = "/start") || ($msgtext = "/menu")) do={');
+  a('    /tool fetch url=($api . $token . "/sendMessage?chat_id=" . $chatid . "&text=' + title + '&reply_markup=" . $mainKbd)' + fe + ' keep-result=no');
+  a('    :set replied true');
+  a('}');
+  a('');
+
+  function foreachStatus(indent) {
+    const sp = ' '.repeat(indent);
+    const sp4 = ' '.repeat(indent + 4);
+    const sp8 = ' '.repeat(indent + 8);
+    let s = '';
+    s += sp + ':global FlagResult' + nl();
+    s += sp + ':foreach idx in={' + srvIds + '} do={' + nl();
+    s += sp4 + ':local ifn ("l2tp-out" . $idx)' + nl();
+    s += sp4 + ':local nm ($srvNames->$idx)' + nl();
+    s += sp4 + ':local ifid [/interface find name=$ifn]' + nl();
+    s += sp4 + ':local r false' + nl();
+    s += sp4 + ':if ([:len $ifid] > 0) do={ :set r [/interface get $ifid running] }' + nl();
+    s += sp4 + ':if ($r=true) do={' + nl();
+    s += sp8 + ':set FlagResult ""' + nl();
+    s += geoCall(indent + 8) + nl();
+    s += sp8 + ':set msg ($msg . $nm . "+" . $FlagResult . "+%E2%9C%85+UP%0A")' + nl();
+    s += sp4 + '}' + nl();
+    s += sp4 + ':if ($r=false) do={ :set msg ($msg . $nm . "+%E2%9D%8C+DOWN%0A") }' + nl();
+    s += sp + '}';
+    return s;
+  }
+
+  function foreachIP(indent) {
+    const sp = ' '.repeat(indent);
+    const sp4 = ' '.repeat(indent + 4);
+    const sp8 = ' '.repeat(indent + 8);
+    let s = '';
+    s += sp + ':global FlagResult' + nl();
+    s += sp + ':foreach idx in={' + srvIds + '} do={' + nl();
+    s += sp4 + ':local ifn ("l2tp-out" . $idx)' + nl();
+    s += sp4 + ':local nm ($srvNames->$idx)' + nl();
+    s += sp4 + ':local ifid [/interface find name=$ifn]' + nl();
+    s += sp4 + ':local r false' + nl();
+    s += sp4 + ':if ([:len $ifid] > 0) do={ :set r [/interface get $ifid running] }' + nl();
+    s += sp4 + ':if ($r=true) do={' + nl();
+    s += sp8 + ':set FlagResult ""' + nl();
+    s += geoCall(indent + 8) + nl();
+    s += sp8 + ':local iip ""' + nl();
+    s += sp8 + ':do { :set iip [/ip address get [/ip address find interface=$ifn] address] } on-error={ :set iip "" }' + nl();
+    s += sp8 + ':set msg ($msg . $nm . "+" . $FlagResult . ":+" . $iip . "%0A")' + nl();
+    s += sp4 + '}' + nl();
+    s += sp4 + ':if ($r=false) do={ :set msg ($msg . $nm . "+%E2%9D%8C+DOWN%0A") }' + nl();
+    s += sp + '}';
+    return s;
+  }
+
+  a(':if (($msgtext = "/status") && ($replied=false)) do={');
+  a('    :local msg "%F0%9F%93%8A+Status:%0A"');
+  a(foreachStatus(4));
+  a('    /tool fetch url=($api . $token . "/sendMessage?chat_id=" . $chatid . "&text=" . $msg . "&reply_markup=" . $mainKbd)' + fe + ' keep-result=no');
+  a('    :set replied true');
+  a('}');
+  a('');
+
+  a(':if (($msgtext = "/uptime") && ($replied=false)) do={');
+  a('    :local uptime [/system resource get uptime]');
+  a('    :local msg ("%F0%9F%95%90+Uptime:+" . $uptime)');
+  a('    /tool fetch url=($api . $token . "/sendMessage?chat_id=" . $chatid . "&text=" . $msg . "&reply_markup=" . $mainKbd)' + fe + ' keep-result=no');
+  a('    :set replied true');
+  a('}');
+  a('');
+
+  a(':if (($msgtext = "/ip") && ($replied=false)) do={');
+  a('    :local msg "%F0%9F%8C%90+IP:%0A"');
+  a(foreachIP(4));
+  a('    /tool fetch url=($api . $token . "/sendMessage?chat_id=" . $chatid . "&text=" . $msg . "&reply_markup=" . $mainKbd)' + fe + ' keep-result=no');
+  a('    :set replied true');
+  a('}');
+  a('');
+
+  a(':if ($isCallback=true) do={');
+  a('');
+  a('    :if ($cdata = "main_menu") do={');
+  a('        /tool fetch url=($api . $token . "/sendMessage?chat_id=" . $chatid . "&text=' + title + '&reply_markup=" . $mainKbd)' + fe + ' keep-result=no');
+  a('    }');
+  a('');
+  a('    :if ($cdata = "status_all") do={');
+  a('        :local msg "%F0%9F%93%8A+Status:%0A"');
+  a(foreachStatus(8));
+  a('        /tool fetch url=($api . $token . "/sendMessage?chat_id=" . $chatid . "&text=" . $msg . "&reply_markup=" . $mainKbd)' + fe + ' keep-result=no');
+  a('    }');
+  a('');
+  a('    :if ($cdata = "server_menu") do={');
+  a('        /tool fetch url=($api . $token . "/sendMessage?chat_id=" . $chatid . "&text=%F0%9F%96%A5%EF%B8%8F+%D8%B3%D8%B1%D9%88%D8%B1%D9%87%D8%A7%3A&reply_markup=" . $srvMenuKbd)' + fe + ' keep-result=no');
+  a('    }');
+  a('');
+
+  a('    :foreach idx in={' + srvIds + '} do={');
+  a('        :local ifn ("l2tp-out" . $idx)');
+  a('        :local nm ($srvNames->$idx)');
+  a('        :local ctrlK ""');
+  for (const s of servers) {
+    a('        :if ($idx=' + s.id + ') do={ :set ctrlK $ctrlKbd' + s.id + ' }');
+  }
+  a('');
+  a('        :if ($cdata = ("srv_" . $idx)) do={');
+  a('            :global FlagResult');
+  a('            :set FlagResult ""');
+  a('            :local ifid [/interface find name=$ifn]');
+  a('            :local r false');
+  a('            :if ([:len $ifid] > 0) do={ :set r [/interface get $ifid running] }');
+  a('            :if ($r=true) do={');
+  a(geoCall(16));
+  a('            }');
+  a('            :local msg ($nm . "+%28" . $ifn . "%29%3A%0A")');
+  a('            :if ($r=true) do={ :set msg ($msg . $FlagResult . "+%E2%9C%85+UP") }');
+  a('            :if ($r=false) do={ :set msg ($msg . "%E2%9D%8C+DOWN") }');
+  a('            /tool fetch url=($api . $token . "/sendMessage?chat_id=" . $chatid . "&text=" . $msg . "&reply_markup=" . $ctrlK)' + fe + ' keep-result=no');
+  a('        }');
+  a('');
+  a('        :if ($cdata = ("srv_status_" . $idx)) do={');
+  a('            :global FlagResult');
+  a('            :set FlagResult ""');
+  a('            :local ifid [/interface find name=$ifn]');
+  a('            :local r false');
+  a('            :if ([:len $ifid] > 0) do={ :set r [/interface get $ifid running] }');
+  a('            :if ($r=true) do={');
+  a(geoCall(16));
+  a('            }');
+  a('            :local msg ($nm . "+%D9%88%D8%B6%D8%B9%DB%8C%D8%AA%3A%0A")');
+  a('            :if ($r=true) do={ :set msg ($msg . $FlagResult . "+%E2%9C%85+UP") }');
+  a('            :if ($r=false) do={ :set msg ($msg . "%E2%9D%8C+DOWN") }');
+  a('            /tool fetch url=($api . $token . "/sendMessage?chat_id=" . $chatid . "&text=" . $msg . "&reply_markup=" . $ctrlK)' + fe + ' keep-result=no');
+  a('        }');
+  a('');
+  a('        :if ($cdata = ("srv_enable_" . $idx)) do={');
+  a('            :local ifid [/interface find name=$ifn]');
+  a('            :if ([:len $ifid] > 0) do={ /interface enable $ifid }');
+  a('            :local msg ($nm . "+%E2%96%B6%EF%B8%8F+%D9%81%D8%B9%D8%A7%D9%84+%D8%B4%D8%AF")');
+  a('            :if ([:len $ifid] = 0) do={ :set msg ($nm . "+%E2%9D%8C+Not+found") }');
+  a('            /tool fetch url=($api . $token . "/sendMessage?chat_id=" . $chatid . "&text=" . $msg . "&reply_markup=" . $ctrlK)' + fe + ' keep-result=no');
+  a('        }');
+  a('');
+  a('        :if ($cdata = ("srv_disable_" . $idx)) do={');
+  a('            :local ifid [/interface find name=$ifn]');
+  a('            :if ([:len $ifid] > 0) do={ /interface disable $ifid }');
+  a('            :local msg ($nm . "+%E2%8F%B8%EF%B8%8F+%D8%BA%DB%8C%D8%B1%D9%81%D8%B9%D8%A7%D9%84+%D8%B4%D8%AF")');
+  a('            :if ([:len $ifid] = 0) do={ :set msg ($nm . "+%E2%9D%8C+Not+found") }');
+  a('            /tool fetch url=($api . $token . "/sendMessage?chat_id=" . $chatid . "&text=" . $msg . "&reply_markup=" . $ctrlK)' + fe + ' keep-result=no');
+  a('        }');
+  a('    }');
+  a('');
+
+  a('    :if ($cdata = "ip") do={');
+  a('        :local msg "%F0%9F%8C%90+IP:%0A"');
+  a(foreachIP(8));
+  a('        /tool fetch url=($api . $token . "/sendMessage?chat_id=" . $chatid . "&text=" . $msg . "&reply_markup=" . $mainKbd)' + fe + ' keep-result=no');
+  a('    }');
+  a('');
+  a('    :if ($cdata = "uptime") do={');
+  a('        :local uptime [/system resource get uptime]');
+  a('        :local msg ("%E2%8F%B1%EF%B8%8F+Uptime:+" . $uptime)');
+  a('        /tool fetch url=($api . $token . "/sendMessage?chat_id=" . $chatid . "&text=" . $msg . "&reply_markup=" . $mainKbd)' + fe + ' keep-result=no');
+  a('    }');
+  a('}');
+  a('');
+  a(':if ([:find $data "update_id"] > 0) do={');
+  a('    :local uidpos [:find $data "update_id"]');
+  a('    :local commapos [:find $data "," $uidpos]');
+  a('    :local uidstr [:pick $data ($uidpos+11) $commapos]');
+  a('    :local newoffset ([:tonum $uidstr] + 1)');
+  a('    :if ([:len $ifname] > 0) do={ /interface bridge set $ifname name=("' + prefix + 'offset-" . $newoffset) }');
+  a('    :if ([:len $ifname] = 0) do={ /interface bridge add name=("' + prefix + 'offset-" . $newoffset) }');
+  a('}');
+
+  return L.join(nl());
+}
+
+function buildCheckAll(token, chatid, servers, api, fe) {
+  const srvIds = servers.map(function(s){return s.id;}).join(';');
+  const srvNames = '{""' + servers.map(function(s){return ';"' + rosStr(s.msgName) + '"';}).join('') + '}';
+  const L = [];
+  function a(s) { L.push(s); }
+  a(':local token "' + rosStr(token) + '"');
+  a(':local chatid "' + rosStr(chatid) + '"');
+  a(':local api "' + api + '"');
+  a(':global FlagResult');
+  a(':local msg "%F0%9F%93%8A+Status:%0A"');
+  a(':local srvNames ' + srvNames);
+  a(':foreach idx in={' + srvIds + '} do={');
+  a('    :local ifn ("l2tp-out" . $idx)');
+  a('    :local nm ($srvNames->$idx)');
+  a('    :local ifid [/interface find name=$ifn]');
+  a('    :local r false');
+  a('    :if ([:len $ifid] > 0) do={ :set r [/interface get $ifid running] }');
+  a('    :if ($r=true) do={');
+  a('        :set FlagResult ""');
+  a(geoCall(8));
+  a('        :set msg ($msg . $nm . "+" . $FlagResult . "+%E2%9C%85+UP%0A")');
+  a('    }');
+  a('    :if ($r=false) do={ :set msg ($msg . $nm . "+%E2%9D%8C+DOWN%0A") }');
+  a('}');
+  a('/tool fetch url=($api . $token . "/sendMessage?chat_id=" . $chatid . "&text=" . $msg)' + fe + ' keep-result=no');
+  return L.join(nl());
+}
+
+function buildSmartCheck(token, chatid, servers, api, fe, prefix) {
+  const srvIds = servers.map(function(s){return s.id;}).join(';');
+  const srvNames = '{""' + servers.map(function(s){return ';"' + rosStr(s.msgName) + '"';}).join('') + '}';
+  const L = [];
+  function a(s) { L.push(s); }
+  a(':local token "' + rosStr(token) + '"');
+  a(':local chatid "' + rosStr(chatid) + '"');
+  a(':local api "' + api + '"');
+  a(':global FlagResult');
+  a(':local srvNames ' + srvNames);
+  a(':foreach idx in={' + srvIds + '} do={');
+  a('    :local ifn ("l2tp-out" . $idx)');
+  a('    :local nm ($srvNames->$idx)');
+  a('    :local ifid [/interface find name=$ifn]');
+  a('    :local cur "0"');
+  a('    :if ([:len $ifid] > 0) do={');
+  a('        :local dis [/interface get $ifid disabled]');
+  a('        :local run [/interface get $ifid running]');
+  a('        :if ($dis=false) do={');
+  a('            :if ($run=true) do={ :set cur "1" }');
+  a('            :if ($run=false) do={ :set cur "2" }');
+  a('        }');
+  a('    }');
+  a('    :local stateif ""');
+  a('    :local prev ""');
+  a('    :local state0 [/interface bridge find name=("' + prefix + 'state-" . $idx . "-0")]');
+  a('    :local state1 [/interface bridge find name=("' + prefix + 'state-" . $idx . "-1")]');
+  a('    :local state2 [/interface bridge find name=("' + prefix + 'state-" . $idx . "-2")]');
+  a('    :if ([:len $state0] > 0) do={ :set stateif $state0; :set prev "0" }');
+  a('    :if ([:len $state1] > 0) do={ :set stateif $state1; :set prev "1" }');
+  a('    :if ([:len $state2] > 0) do={ :set stateif $state2; :set prev "2" }');
+  a('    :if ([:len $stateif] = 0) do={');
+  a('        /interface bridge add name=("' + prefix + 'state-" . $idx . "-" . $cur)');
+  a('        :set stateif [/interface bridge find name=("' + prefix + 'state-" . $idx . "-" . $cur)]');
+  a('    }');
+  a('    :if ($cur != $prev) do={');
+  a('        :set FlagResult ""');
+  a('        :if ($cur = "1") do={');
+  a(geoCall(12));
+  a('        }');
+  a('        :local msg ""');
+  a('        :if ($cur="1") do={ :set msg ($nm . "+" . $FlagResult . "+%E2%9C%85+Connected") }');
+  a('        :if ($cur="0") do={ :set msg ($nm . "+%E2%9D%8C+Disabled%2FDown") }');
+  a('        :if ($cur="2") do={ :set msg ($nm . "+%E2%9A%A0%EF%B8%8F+Enabled+but+not+connected") }');
+  a('        /tool fetch url=($api . $token . "/sendMessage?chat_id=" . $chatid . "&text=" . $msg)' + fe + ' keep-result=no');
+  a('        /interface bridge set $stateif name=("' + prefix + 'state-" . $idx . "-" . $cur)');
+  a('    }');
+  a('}');
+  return L.join(nl());
+}
+
+function generate() {
+  if (!platform) { alert('اول تلگرام یا بله رو انتخاب کن'); return; }
+  const token = document.getElementById('token').value.trim();
+  const chatid = document.getElementById('chatid').value.trim();
+  const count = parseInt(document.getElementById('server-count').value);
+  const interval = document.getElementById('interval').value;
+  const listenerInt = document.getElementById('listener-interval').value;
+  const autoReport = document.getElementById('auto-report').checked;
+  const smartCheck = document.getElementById('smart-check').checked;
+  const filtered = platform === 'tg' && document.getElementById('filter-toggle').checked;
+  const iface = platform === 'tg' ? document.getElementById('iface').value : 'l2tp-out1';
+  if (!token || !chatid) { alert('TOKEN و Chat ID رو وارد کن'); return; }
+
+  const servers = [];
+  for (let i = 1; i <= count; i++) {
+    const name = getSrvName(i);
+    servers.push({id: i, name: name, msgName: urlText(name), iface: 'l2tp-out' + i});
+  }
+
+  const api = platform === 'tg' ? 'https://api.telegram.org/bot' : 'https://tapi.bale.ai/bot';
+  const fe = platform === 'tg' ? '' : ' check-certificate=no';
+  const prefix = platform === 'tg' ? 'tg-' : 'bale-';
+  const offsetLen = platform === 'tg' ? 10 : 12;
+  const nClr = platform === 'tg' ? 'n-blue' : 'n-purple';
+  const intLabels = {'1h':'۱ ساعت','2h':'۲ ساعت','4h':'۴ ساعت','6h':'۶ ساعت','12h':'۱۲ ساعت','24h':'۲۴ ساعت'};
+
+  const ls = buildListener(token, chatid, servers, api, fe, prefix, offsetLen);
+  const ca = buildCheckAll(token, chatid, servers, api, fe);
+  const sc = buildSmartCheck(token, chatid, servers, api, fe, prefix);
+
+  let html = '<div class="steps">';
+  let n = 1;
+
+  html += mkStep(n++, 'Script — get-flag', 'b-once', 'یه‌بار', 'sgf', GET_FLAG_V12, nClr,
+    '<strong>✓ v13:</strong> این اسکریپت پرچم GeoIP را می‌سازد. دانلود <code>get-flag-v13.rsc</code> و import کن.');
+
+  html += mkStep(n++, 'Script — get-country', 'b-once', 'یه‌بار', 'sgc', GET_COUNTRY_V12, nClr,
+    '<strong>✓ v13:</strong> HTTP (IP مستقیم، بدون نیاز به DNS) + سازگار با RouterOS 6/7. دانلود <code>get-country-v13.rsc</code> و import کن.');
+
+  if (platform === 'tg') {
+    html += mkStep(n++, 'Static DNS — تلگرام', 'b-once', 'یه‌بار', 's1',
+      '/ip dns static remove [find name=api.telegram.org]' + nl() +
+      '/ip dns static add name=api.telegram.org address=149.154.167.220', nClr, 'DNS ثابت تلگرام.');
+    if (filtered) {
+      html += mkStep(n++, 'Route — از ' + iface, 'b-once', 'یه‌بار', 's2',
+        '/ip route remove [find dst-address=149.154.160.0/20]' + nl() +
+        '/ip route remove [find dst-address=91.108.4.0/22]' + nl() +
+        '/ip route add dst-address=149.154.160.0/20 gateway=' + iface + nl() +
+        '/ip route add dst-address=91.108.4.0/22 gateway=' + iface, nClr, 'ترافیک تلگرام از L2TP.');
+    } else {
+      html += mkStep(n++, 'Route — تلگرام فیلتر نیست', 'b-opt', 'اختیاری', 's2',
+        '# /ip route add dst-address=149.154.160.0/20 gateway=l2tp-out1' + nl() + '# /ip route add dst-address=91.108.4.0/22 gateway=l2tp-out1', 'n-warn', 'اگه فیلتر شد # رو بردار.');
+    }
+  } else {
+    html += mkStep(n++, 'Static DNS — سرور بله', 'b-once', 'یه‌بار', 's1',
+      '/ip dns static remove [find name=tapi.bale.ai]' + nl() +
+      '/ip dns static add name=tapi.bale.ai address=2.189.68.126', nClr, 'DNS ثابت بله.');
+  }
+
+  html += mkStep(n++, 'Bridge — offset', 'b-once', 'یه‌بار', 's_off',
+    ':if ([:len [/interface bridge find where name~"' + prefix + 'offset-"]] = 0) do={' + nl() +
+    '    /interface bridge add name=' + prefix + 'offset-1' + nl() +
+    '}', nClr, '<strong>مهم:</strong> حذفش نکن.');
+
+  if (smartCheck) {
+    let sb = '';
+    for (let i = 1; i <= count; i++) {
+      sb += ':if ([:len [/interface bridge find name=' + prefix + 'state-' + i + '-0]] = 0) do={ /interface bridge add name=' + prefix + 'state-' + i + '-0 }' + nl();
+    }
+    html += mkStep(n++, 'Bridges — state', 'b-once', 'یه‌بار', 's_st', sb.trim(), nClr, '<strong>مهم:</strong> حذفشون نکن.');
+  }
+
+  html += mkStep(n++, 'Script — ' + prefix + 'listener', 'b-dynamic', 'TOKEN لازمه', 's_ls', ls, nClr,
+    '<strong>✓ v13:</strong> مقاوم‌تر در برابر خطای fetch، فایل خالی و اینترفیس حذف‌شده. حجم: ~' + Math.round(ls.length/1024) + ' KB');
+  html += mkStep(n++, 'Scheduler — listener', 'b-once', 'یه‌بار', 's_lsch',
+    '/system scheduler remove [find name=' + prefix + 'listener]' + nl() +
+    '/system scheduler add name=' + prefix + 'listener interval=' + listenerInt + ' on-event=' + prefix + 'listener start-time=startup', '', '');
+
+  if (autoReport) {
+    html += mkStep(n++, 'Script — ' + prefix + 'check-all', 'b-dynamic', 'TOKEN لازمه', 's_ca', ca, nClr,
+      'گزارش خودکار هر <strong>' + (intLabels[interval] || interval) + '</strong>.');
+    html += mkStep(n++, 'Scheduler — check-all', 'b-once', 'یه‌بار', 's_casch',
+      '/system scheduler remove [find name=' + prefix + 'check-all]' + nl() +
+      '/system scheduler add name=' + prefix + 'check-all interval=' + interval + ' on-event=' + prefix + 'check-all start-time=startup', '', '');
+  }
+
+  if (smartCheck) {
+    html += mkStep(n++, 'Script — ' + prefix + 'smart-check', 'b-dynamic', 'TOKEN لازمه', 's_sc', sc, nClr,
+      '<strong>✓ v13:</strong> بهتر error handling برای missing state bridges و missing interfaces.');
+    html += mkStep(n++, 'Scheduler — smart-check', 'b-once', 'یه‌بار', 's_scsch',
+      '/system scheduler remove [find name=' + prefix + 'smart-check]' + nl() +
+      '/system scheduler add name=' + prefix + 'smart-check interval=1m on-event=' + prefix + 'smart-check start-time=startup', '', '');
+  }
+
+  let testCmd = '/system script run ' + prefix + 'listener';
+  if (autoReport) testCmd += nl() + '/system script run ' + prefix + 'check-all';
+  if (smartCheck) testCmd += nl() + '/system script run ' + prefix + 'smart-check';
+
+  html += mkStep('✓', 'تست نهایی', 'b-test', 'تست', 's_test', testCmd, 'n-green',
+    'توی ' + (platform === 'tg' ? 'تلگرام' : 'بله') + ' <strong>/start</strong> بفرست — منو ظاهر میشه ✓');
+
+  html += '</div>';
+  document.getElementById('output-main').innerHTML = html;
+  document.getElementById('output-main').style.display = 'block';
+  const clr = platform === 'tg' ? 'rgba(41,168,233,0.5)' : 'rgba(124,106,245,0.5)';
+  const stepsEls = document.querySelectorAll('#output-main .step');
+  stepsEls.forEach(function(el, i) {
+    setTimeout(function() {
+      el.style.borderColor = clr;
+      setTimeout(function() { el.style.borderColor = ''; }, 700);
+    }, i * 60);
+  });
+}
+
+updateServerFields();
+
+</script>
+</body>
+</html>
